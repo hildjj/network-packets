@@ -17,5 +17,5 @@ module.exports = {
   includeVersion: true,
   categorizeByGroup: false,
   sort: ['static-first', 'alphabetical'],
-  exclude: ['**/*.spec.ts'],
+  exclude: ['test/', 't.js', 't.ts', 'docs/**'],
 };
