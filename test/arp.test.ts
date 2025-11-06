@@ -1,8 +1,9 @@
-import {LINKTYPE_ETHERNET, readPacket} from '../src/index.ts';
-import {assert, describe, test} from 'vitest';
+import {LINKTYPE_ETHERNET, readPacket} from '../lib/index.js';
+import assert from 'node:assert';
 import {hex} from './utils.ts';
+import {test} from 'node:test';
 
-describe('ARP', () => {
+test('ARP', () => {
   test('edges', () => {
     const p = readPacket(hex`
 ffffffffffff 00070daff454 0806

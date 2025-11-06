@@ -1,9 +1,10 @@
-import {ICMP6, type IPv6, LINKTYPE_RAW, readPacket} from '../src/index.ts';
-import {assert, describe, test} from 'vitest';
+import {type ICMP6, type IPv6, LINKTYPE_RAW, readPacket} from '../lib/index.js';
+import assert from 'node:assert';
 import {hex} from './utils.ts';
+import {test} from 'node:test';
 
-describe('ICMP6', () => {
-  test('Neighbor Solicitation', () => {
+test('ICMP6', async () => {
+  await test('Neighbor Solicitation', () => {
     const b = hex`
 # IPv6 Base Header (40 bytes)
 60 00 00 00       # Version (6), Traffic Class (0), Flow Label (0)
@@ -35,8 +36,12 @@ AA BB CC DD EE FF # Link-Layer Address (MAC Address of the sender)
 0001020304050607
 000102030405`;
     const p = readPacket(b, LINKTYPE_RAW) as IPv6;
-    assert.containsSubset(p.data, {
+    assert.deepEqual(p.data, {
       type: 'ipv6_icmp',
+      messageType: 'Neighbor Solicitation',
+      error: false,
+      code: 0,
+      checksum: 27660,
       data: {
         type: 'NeighborSolicitation',
         target: '2001:db8:1::1',
@@ -56,7 +61,7 @@ AA BB CC DD EE FF # Link-Layer Address (MAC Address of the sender)
     });
   });
 
-  test('Packet too big', () => {
+  await test('Packet too big', () => {
     const b = hex`
 # OUTER IPv6 Base Header (40 bytes)
 60 00 00 00       # Version (6), Traffic Class (0), Flow Label (0)
@@ -103,7 +108,7 @@ F7 F0             # Checksum (example value)
     assert.equal((p.data as ICMP6).messageType, 'Packet Too Big');
   });
 
-  test('parameter problem', () => {
+  await test('parameter problem', () => {
     const b = hex`
 # OUTER IPv6 Base Header (40 bytes)
 60 00 00 00       # Version (6), Traffic Class (0), Flow Label (0)
@@ -147,7 +152,7 @@ FF                # Inner Hop Limit: 255 (This is the field causing the problem/
     assert.deepEqual((p.data as ICMP6).messageType, 'Parameter Problem');
   });
 
-  test('unknown message type', () => {
+  await test('unknown message type', () => {
     const b = hex`
 # OUTER IPv6 Base Header (40 bytes)
 60 00 00 00       # Version (6), Traffic Class (0), Flow Label (0)

@@ -1,10 +1,11 @@
-import {type IPv6, LINKTYPE_RAW, readPacket} from '../src/index.ts';
-import {assert, describe, test} from 'vitest';
+import {type IPv6, LINKTYPE_RAW, readPacket} from '../lib/index.js';
 import {Buffer} from 'node:buffer';
+import assert from 'node:assert';
 import {hex} from './utils.ts';
+import {test} from 'node:test';
 
-describe('IPv6', () => {
-  test('extensions', () => {
+test('IPv6', async () => {
+  await test('extensions', () => {
     const b = hex`
 # IPv6 Base Header (40 bytes)
 60 00 00 00       # Version (6), Traffic Class (0), Flow Label (0)
@@ -42,7 +43,7 @@ F7 F0             # Checksum (example value)
     });
   });
 
-  test('no next header', () => {
+  await test('no next header', () => {
     const b = hex`
 # IPv6 Base Header (40 bytes)
 60 00 00 00       # Version (6), Traffic Class (0), Flow Label (0)
@@ -60,7 +61,7 @@ F7 F0             # Checksum (example value)
     assert.deepEqual(p.data, Buffer.alloc(0));
   });
 
-  test('unknown L4', () => {
+  await test('unknown L4', () => {
     const b = hex`
 # IPv6 Base Header (40 bytes)
 60 00 00 00       # Version (6), Traffic Class (0), Flow Label (0)

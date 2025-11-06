@@ -1,9 +1,10 @@
-import {type ICMP, IPv4, type IPv4flags, LINKTYPE_RAW, readPacket} from '../src/index.ts';
-import {assert, describe, test} from 'vitest';
+import {type ICMP, type IPv4, type IPv4flags, LINKTYPE_RAW, readPacket} from '../lib/index.js';
+import assert from 'node:assert';
 import {hex} from './utils.ts';
+import {test} from 'node:test';
 
-describe('ICMP', () => {
-  test('dest unreachable', () => {
+test('ICMP', async () => {
+  await test('dest unreachable', () => {
     const b = hex`
 45 00 00 38    # Version (4), IHL (5), TOS (0), Total Length (60 bytes)
 A2 22 00 00    # Identification, Flags (DF=0), Fragment Offset (0)
@@ -79,7 +80,7 @@ C0 A8 01 05    # Destination IP: 192.168.1.5
     });
   });
 
-  test('source quench', () => {
+  await test('source quench', () => {
     const b = hex`
 # OUTER IPv4 Header (ICMP packet) - 20 bytes
 # Sent by router 192.168.1.5 to source 192.168.1.100
@@ -109,7 +110,7 @@ C0 A8 01 05    # Destination IP: 192.168.1.5
     assert.deepEqual((p.data as ICMP).itype, 'Source Quench');
   });
 
-  test('redirect', () => {
+  await test('redirect', () => {
     const b = hex`
 # OUTER IPv4 Header (ICMP packet) - 20 bytes
 # Sent by router 192.168.1.1 to host 192.168.1.100
@@ -139,7 +140,7 @@ C0 A8 01 64    # Source IP: 192.168.1.100
     assert.deepEqual((p.data as ICMP).itype, 'Redirect');
   });
 
-  test('time exceeded', () => {
+  await test('time exceeded', () => {
     const b = hex`
 # OUTER IPv4 Header (ICMP packet) - 20 bytes
 # Sent by router 10.0.0.5 back to host 192.168.1.100
@@ -169,7 +170,7 @@ C0 A8 01 64    # Source IP: 192.168.1.100
     assert.deepEqual((p.data as ICMP).itype, 'Time Exceeded');
   });
 
-  test('parameter problem', () => {
+  await test('parameter problem', () => {
     const b = hex`
 # OUTER IPv4 Header (ICMP packet) - 20 bytes
 # Sent by router 192.168.1.5 back to host 192.168.1.100
@@ -201,7 +202,7 @@ C0 A8 01 64    # Source IP: 192.168.1.100
     assert.deepEqual((p.data as ICMP).itype, 'Parameter Problem');
   });
 
-  test('timestamp request', () => {
+  await test('timestamp request', () => {
     const b = hex`
 # OUTER IPv4 Header (ICMP packet) - 20 bytes
 # Sent by router 192.168.1.5 back to host 192.168.1.100
@@ -223,7 +224,7 @@ C0 A8 01 64    # Destination IP: 192.168.1.100
     assert.deepEqual((p.data as ICMP).itype, 'Timestamp');
   });
 
-  test('timestamp request', () => {
+  await test('timestamp request', () => {
     const b = hex`
 # OUTER IPv4 Header (ICMP packet) - 20 bytes
 # Sent by router 192.168.1.5 back to host 192.168.1.100
@@ -245,7 +246,7 @@ C0 A8 01 64    # Destination IP: 192.168.1.100
     assert.deepEqual((p.data as ICMP).itype, 'Timestamp Reply');
   });
 
-  test('address mask request', () => {
+  await test('address mask request', () => {
     const b = hex`
 # OUTER IPv4 Header (ICMP packet) - 20 bytes
 # Sent by router 192.168.1.5 back to host 192.168.1.100
