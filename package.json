@@ -21,32 +21,32 @@
   "scripts": {
     "clean": "rm -rf coverage docs lib",
     "lint": "eslint .",
-    "test": "vitest --run",
+    "pretest": "tsdown --sourcemap",
+    "test": "c8 node --enable-source-maps --test",
     "docs": "typedoc",
     "ts": "tsdown",
     "build": "npm run ts && npm run test && npm run lint && npm run docs && npm pack --dry-run"
   },
+  "dependencies": {
+    "@leichtgewicht/ip-codec": "2.0.5",
+    "dataview-stream": "1.7.0"
+  },
   "devDependencies": {
     "@cto.af/eslint-config": "6.1.0",
     "@cto.af/pcap-ng-parser": "2.1.0",
-    "@eslint/markdown": "7.5.0",
+    "@eslint/markdown": "7.5.1",
     "@fast-csv/parse": "5.0.5",
     "@types/node": "24.10.0",
-    "@vitest/coverage-v8": "4.0.6",
+    "c8": "10.1.3",
     "eslint": "9.39.1",
     "eslint-plugin-jsdoc": "61.1.12",
-    "tsdown": "^0.15.12",
+    "tsdown": "^0.16.0",
     "typedoc": "0.28.14",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.3",
-    "vitest": "4.0.6"
+    "typescript-eslint": "8.46.3"
   },
   "packageManager": "pnpm@10.20.0",
   "engines": {
     "node": ">=20"
-  },
-  "dependencies": {
-    "@leichtgewicht/ip-codec": "2.0.5",
-    "dataview-stream": "1.7.0"
   }
 }

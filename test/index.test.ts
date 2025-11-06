@@ -1,9 +1,10 @@
-import {IPv4, LINKTYPE_NULL, LINKTYPE_RAW, readPacket} from '../src/index.ts';
-import {assert, describe, suite, test} from 'vitest';
+import {type IPv4, LINKTYPE_NULL, LINKTYPE_RAW, readPacket} from '../lib/index.js';
 import {PCAPNGParser} from '@cto.af/pcap-ng-parser';
 import type {ReadStream} from 'node:fs';
+import assert from 'node:assert';
 import fs from 'node:fs/promises';
 import {hex} from './utils.ts';
+import {test} from 'node:test';
 
 const DATA = new URL('./data/', import.meta.url);
 
@@ -16,7 +17,9 @@ function readFile(s: ReadStream, _fn: string): Promise<[number, number]> {
       .on('error', e => {
         reject(e as Error);
       })
-      .on('close', () => resolve([er, count]))
+      .on('close', () => {
+        resolve([er, count]);
+      })
       .on('data', d => {
         try {
           readPacket(d.data, p.interfaces[d.interfaceId].linkType);
@@ -30,19 +33,21 @@ function readFile(s: ReadStream, _fn: string): Promise<[number, number]> {
   });
 }
 
-suite.sequential('data files', async () => {
+test('data files', async () => {
   const dirFiles = await fs.readdir(DATA);
-  test.for(dirFiles)('File: %s', async fn => {
-    const u = new URL(fn, DATA);
-    const s = (await fs.open(u)).createReadStream();
-    const [e, c] = await readFile(s, fn);
-    assert.equal(e, 0);
-    assert(c > 0);
-  });
+  for (const fn of dirFiles) {
+    await test(`File: ${fn}`, async () => {
+      const u = new URL(fn, DATA);
+      const s = (await fs.open(u)).createReadStream();
+      const [e, c] = await readFile(s, fn);
+      assert.equal(e, 0);
+      assert(c > 0);
+    });
+  }
 });
 
-describe('readPacket', () => {
-  test('LINKTYPE_NULL', () => {
+test('readPacket', async () => {
+  await test('LINKTYPE_NULL', () => {
     const b = hex`
 00 00 00 02    # IPv4 packet
 
@@ -63,15 +68,15 @@ C0 A8 01 64    # Destination IP: 192.168.1.100
     assert.equal(p.protocol, 'icmp');
   });
 
-  test('empty', () => {
+  await test('empty', () => {
     assert.throws(() => readPacket(hex``, LINKTYPE_RAW));
   });
 
-  test('invalid IP version', () => {
+  await test('invalid IP version', () => {
     assert.throws(() => readPacket(hex`50`, LINKTYPE_RAW));
   });
 
-  test('invalid link type', () => {
+  await test('invalid link type', () => {
     assert.throws(() => readPacket(hex`60`, 65000));
   });
 });

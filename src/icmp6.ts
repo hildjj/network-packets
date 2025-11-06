@@ -343,7 +343,7 @@ export function readICMP6(r: DataViewReader): ICMP6 {
       finish: 0,
       convert: v => ICMP6_MESSAGE_TYPES.get(v as number) ?? v,
     })
-    .bits({fromTemp: 'mtype', to: 'error', start: 7})
+    .bits({fromTemp: 'mtype', to: 'error', start: 7, convert: v => !v})
     .u8('code', {convert: v => codeToText(v, p.temp.mtype)})
     .u16('checksum');
   const decoder = ICMP6_MESSAGE_DECODER.get(p.temp.mtype);

@@ -6,10 +6,12 @@ export default defineConfig({
   entry: [
     'src/index.ts',
   ],
+  minify: {
+    mangle: false,
+  },
   format: 'esm',
-  minify: true,
   outDir: 'lib',
   sourcemap: false,
   splitting: false,
-  target: 'es2022',
+  platform: 'neutral',
 });

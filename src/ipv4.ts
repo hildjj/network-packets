@@ -1,5 +1,5 @@
 import {DataViewReader, Packet} from 'dataview-stream';
-import {type L4, L4_DECODERS, L4_PROTOCOLS, TruncatedL4} from './L4.ts';
+import {type L4, L4_DECODERS, L4_PROTOCOLS, type TruncatedL4} from './L4.ts';
 import type {PartialTyped, Pretty} from './types.ts';
 import {decode as ipDecode} from '@leichtgewicht/ip-codec';
 

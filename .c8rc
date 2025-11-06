@@ -4,7 +4,15 @@
     "lcov"
   ],
   "exclude": [
+    "eslint.config.js",
+    "tsdown.config.js",
+    "typedoc.config.cjs",
+    "src/types.ts",
     "**/test/**",
-    "**/node_modules/**"
-  ]
+    "**/node_modules/**",
+    "**/coverage/**",
+    "**/docs/**"
+  ],
+  "all": true,
+  "excludeAfterRemap": true
 }

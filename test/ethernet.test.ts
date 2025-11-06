@@ -1,10 +1,11 @@
-import {LINKTYPE_ETHERNET, readPacket} from '../src/index.ts';
-import {assert, describe, test} from 'vitest';
+import {LINKTYPE_ETHERNET, readPacket} from '../lib/index.js';
 import {Buffer} from 'node:buffer';
+import assert from 'node:assert';
 import {hex} from './utils.ts';
+import {test} from 'node:test';
 
-describe('ethernet', () => {
-  test('length', () => {
+test('ethernet', async () => {
+  await test('length', () => {
     const p = readPacket(hex`
 ffffffffffff 00070daff454 0002
   61 62`, LINKTYPE_ETHERNET);
@@ -19,7 +20,7 @@ ffffffffffff 00070daff454 0002
     });
   });
 
-  test('unknown ethertype', () => {
+  await test('unknown ethertype', () => {
     const p = readPacket(hex`
 ffffffffffff 00070daff454 cdef
   61 62
