@@ -334,7 +334,7 @@ interface ICMP6temp {
  */
 export function readICMP6(r: DataViewReader): ICMP6 {
   const p = new Packet<ICMP6, ICMP6temp>(r);
-  p.constant('type', 'ipv6_icmp')
+  p.constant('type', 'icmpipv6_icmp')
     .u8('mtype', {temp: true})
     .bits({
       fromTemp: 'mtype',
