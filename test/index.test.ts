@@ -1,6 +1,7 @@
 import {type IPv4, LINKTYPE_NULL, LINKTYPE_RAW, readPacket} from '../lib/index.js';
 import {PCAPNGParser} from '@cto.af/pcap-ng-parser';
-import type {ReadStream} from 'node:fs';
+import {Readable} from 'node:stream';
+import type {ReadableStream} from 'node:stream/web';
 import assert from 'node:assert';
 import fs from 'node:fs/promises';
 import {hex} from './utils.ts';
@@ -8,14 +9,13 @@ import {test} from 'node:test';
 
 const DATA = new URL('./data/', import.meta.url);
 
-function readFile(s: ReadStream, _fn: string): Promise<[number, number]> {
+function readFile(s: ReadableStream, _fn: string): Promise<[number, number]> {
   let er = 0;
   let count = 0;
   return new Promise((resolve, reject) => {
-    const p = new PCAPNGParser();
-    s.pipe(p)
-      .on('error', e => {
-        reject(e as Error);
+    const p = new PCAPNGParser()
+      .on('error', (e: Error) => {
+        reject(e);
       })
       .on('close', () => {
         resolve([er, count]);
@@ -30,6 +30,7 @@ function readFile(s: ReadStream, _fn: string): Promise<[number, number]> {
           er++;
         }
       });
+    s.pipeTo(p);
   });
 }
 
@@ -39,7 +40,7 @@ test('data files', async () => {
     await test(`File: ${fn}`, async () => {
       const u = new URL(fn, DATA);
       const s = (await fs.open(u)).createReadStream();
-      const [e, c] = await readFile(s, fn);
+      const [e, c] = await readFile(Readable.toWeb(s), fn);
       assert.equal(e, 0);
       assert(c > 0);
     });

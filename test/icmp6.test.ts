@@ -37,7 +37,7 @@ AA BB CC DD EE FF # Link-Layer Address (MAC Address of the sender)
 000102030405`;
     const p = readPacket(b, LINKTYPE_RAW) as IPv6;
     assert.deepEqual(p.data, {
-      type: 'ipv6_icmp',
+      type: 'icmpipv6_icmp',
       messageType: 'Neighbor Solicitation',
       error: false,
       code: 0,
